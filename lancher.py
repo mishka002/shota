@@ -4,6 +4,7 @@ import threading
 import subprocess
 import sys
 import os
+import argparse
 from updater import ensure_repo
 
 # Try to use ttkbootstrap for modern theming if available
@@ -19,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTINGS_PATH = os.path.join(BASE_DIR, "githubSettings.md")
 
 
-def run_update_async(status_var: tk.StringVar, button: tk.Button, pbar: ttk.Progressbar | None = None):
+def run_update_async(status_var: tk.StringVar, button: tk.Button, pbar: ttk.Progressbar | None = None, on_done=None):
     def task():
         try:
             button.config(state=tk.DISABLED)
@@ -38,11 +39,19 @@ def run_update_async(status_var: tk.StringVar, button: tk.Button, pbar: ttk.Prog
                     pbar.stop()
             except Exception:
                 pass
+            if callable(on_done):
+                try:
+                    on_done()
+                except Exception:
+                    pass
 
     threading.Thread(target=task, daemon=True).start()
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Shota გამშვები")
+    parser.add_argument("--autorun", action="store_true", help="განახლების შემდეგ ავტომატურად გაუშვი კალკულატორი")
+    args = parser.parse_args()
     # Create window with theme if possible
     if THEMED:
         root = tb.Window(themename="flatly")
@@ -94,7 +103,7 @@ def main():
             pbar.start(70)
         except Exception:
             pass
-        run_update_async(status_var, update_btn, pbar)
+    run_update_async(status_var, update_btn, pbar, on_done=(run_calculator if args.autorun else None))
 
     def run_calculator():
         exe = sys.executable or "python3"

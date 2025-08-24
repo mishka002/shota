@@ -20,4 +20,4 @@ if [ -f "$APP_DIR/requirements.txt" ]; then
   "$VENV_DIR/bin/pip" install -r "$APP_DIR/requirements.txt" >/dev/null 2>&1 || true
 fi
 
-exec "$VENV_DIR/bin/python" "$APP_DIR/lancher.py"
+exec "$VENV_DIR/bin/python" "$APP_DIR/lancher.py" --autorun
