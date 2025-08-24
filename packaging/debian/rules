@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	# Install app files to /opt/shota
+	mkdir -p debian/shota/opt/shota
+	cp -r ../../lancher.py ../../home.py ../../updater.py ../../githubSettings.md ../../requirements.txt debian/shota/opt/shota/
+	# Launcher script in /usr/bin
+	mkdir -p debian/shota/usr/bin
+	install -m 0755 ../../packaging/scripts/shota-launch debian/shota/usr/bin/shota
+	# Desktop entry and icon
+	mkdir -p debian/shota/usr/share/applications
+	mkdir -p debian/shota/usr/share/icons/hicolor/256x256/apps
+	install -m 0644 ../../packaging/desktop/shota.desktop debian/shota/usr/share/applications/shota.desktop
+	install -m 0644 ../../packaging/desktop/shota.png debian/shota/usr/share/icons/hicolor/256x256/apps/shota.png || true
+
+override_dh_installdocs:
+	dh_installdocs ../../README.md 2>/dev/null || true

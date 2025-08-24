@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import threading
+import subprocess
+import sys
 import os
 from updater import ensure_repo
 
@@ -79,9 +81,11 @@ def main():
     # Styled button if ttkbootstrap present
     if THEMED:
         update_btn = tb.Button(btns, text="გითჰაბის შემოწმება/განახლება", bootstyle="primary")
+        run_btn = tb.Button(btns, text="კალკულატორის გაშვება", bootstyle="success")
         quit_btn = tb.Button(btns, text="გასვლა", bootstyle="secondary", command=root.destroy)
     else:
         update_btn = ttk.Button(btns, text="გითჰაბის შემოწმება/განახლება")
+        run_btn = ttk.Button(btns, text="კალკულატორის გაშვება")
         quit_btn = ttk.Button(btns, text="გასვლა", command=root.destroy)
 
     def start_update():
@@ -92,9 +96,20 @@ def main():
             pass
         run_update_async(status_var, update_btn, pbar)
 
+    def run_calculator():
+        exe = sys.executable or "python3"
+        home_py = os.path.join(BASE_DIR, "home.py")
+        try:
+            subprocess.Popen([exe, home_py])
+            status_var.set("კალკულატორი გაეშვა")
+        except Exception as e:
+            status_var.set(f"ვერ გაიშვა: {e}")
+
     update_btn.config(command=start_update)
+    run_btn.config(command=run_calculator)
 
     update_btn.pack(side="left")
+    run_btn.pack(side="left", padx=(8, 0))
     btns.pack_propagate(False)
     quit_btn.pack(side="right")
 

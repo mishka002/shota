@@ -1,0 +1,12 @@
+Source: shota
+Section: utils
+Priority: optional
+Maintainer: mishka002 <mishka002@users.noreply.github.com>
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13)
+
+Package: shota
+Architecture: all
+Depends: python3, python3-tk, git, ${misc:Depends}
+Description: Shota launcher and calculator
+ Simple GUI launcher that updates a GitHub repo and runs a calculator.
