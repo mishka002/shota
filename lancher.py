@@ -5,7 +5,7 @@ import subprocess
 import sys
 import os
 import argparse
-from updater import ensure_repo
+from updater import ensure_repo, get_repo_path
 
 # Try to use ttkbootstrap for modern theming if available
 try:
@@ -99,7 +99,10 @@ def main():
 
     def run_calculator():
         exe = sys.executable or "python3"
-        home_py = os.path.join(BASE_DIR, "home.py")
+        # Prefer running the updated home.py from the cloned repo if available
+        url, repo_path = get_repo_path(BASE_DIR, SETTINGS_PATH)
+        candidate = os.path.join(repo_path, "home.py") if repo_path else None
+        home_py = candidate if candidate and os.path.isfile(candidate) else os.path.join(BASE_DIR, "home.py")
         try:
             subprocess.Popen([exe, home_py])
             status_var.set("კალკულატორი გაეშვა")

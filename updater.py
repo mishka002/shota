@@ -31,6 +31,34 @@ def parse_repo_url(settings_path: str) -> str | None:
     return m.group(0) if m else None
 
 
+def _effective_base_dir(base_dir: str) -> str:
+    """Return a writable base dir. If base_dir is not writable (e.g., /opt),
+    fall back to ~/.local/share/shota.
+    """
+    try:
+        if os.path.isdir(base_dir) and os.access(base_dir, os.W_OK):
+            return base_dir
+    except Exception:
+        pass
+    home = os.path.expanduser("~")
+    fallback = os.path.join(home, ".local", "share", "shota")
+    os.makedirs(fallback, exist_ok=True)
+    return fallback
+
+
+def get_repo_path(base_dir: str, settings_path: str) -> Tuple[str | None, str]:
+    """Compute the intended local repository path (with writable fallback).
+
+    Returns (url, repo_path). If URL cannot be parsed, (None, base_dir_or_fallback).
+    """
+    url = parse_repo_url(settings_path)
+    eff_base = _effective_base_dir(base_dir)
+    if not url:
+        return None, eff_base
+    repo_name = os.path.splitext(os.path.basename(url))[0]
+    return url, os.path.join(eff_base, repo_name)
+
+
 def ensure_repo(base_dir: str, settings_path: str) -> Tuple[bool, str, str]:
     """
     Ensure the local repo (derived from settings) exists and is up to date.
@@ -40,12 +68,9 @@ def ensure_repo(base_dir: str, settings_path: str) -> Tuple[bool, str, str]:
       - repo_path: local path where the repo lives (or intended to live)
       - message: human-readable status
     """
-    url = parse_repo_url(settings_path)
+    url, repo_path = get_repo_path(base_dir, settings_path)
     if not url:
-        return False, base_dir, "რეპოზიტორის URL ვერ მოიძებნა githubSettings.md-ში"
-
-    repo_name = os.path.splitext(os.path.basename(url))[0]
-    repo_path = os.path.join(base_dir, repo_name)
+        return False, repo_path, "რეპოზიტორის URL ვერ მოიძებნა githubSettings.md-ში"
 
     # Verify git availability
     code, out, err = _run(["git", "--version"])    
@@ -54,6 +79,7 @@ def ensure_repo(base_dir: str, settings_path: str) -> Tuple[bool, str, str]:
 
     if not os.path.exists(repo_path) or not os.path.isdir(os.path.join(repo_path, ".git")):
         # Clone fresh
+        os.makedirs(os.path.dirname(repo_path), exist_ok=True)
         code, out, err = _run(["git", "clone", url, repo_path])
         if code != 0:
             return False, repo_path, f"კლონირება ვერ მოხერხდა: {err or out}"
