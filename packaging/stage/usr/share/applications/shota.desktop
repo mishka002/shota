@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Shota Launcher
+Comment=Run the Shota launcher and calculator
+Exec=shota
+Icon=shota
+Terminal=false
+Categories=Utility;Education;

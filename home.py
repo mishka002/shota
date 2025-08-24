@@ -11,6 +11,9 @@ except Exception:
 	tb = None
 	THEMED = False
 
+# App version for UI
+VERSION = "1.0.1"
+
 
 class SafeEvaluator(ast.NodeVisitor):
 	"""Safely evaluate arithmetic expressions: + - * / % ** and parentheses."""
@@ -73,14 +76,14 @@ def safe_eval(expr: str) -> float:
 class CalculatorApp:
 	def __init__(self, root: tk.Misc):
 		self.root = root
-		self.root.title("კალკულატორი")
+		self.root.title(f"კალკულატორი {VERSION}")
 
 		# Main container
 		self.frame = ttk.Frame(root, padding=(16, 12))
 		self.frame.pack(fill="both", expand=True)
 
 		self.expr_var = tk.StringVar(value="")
-		self.status_var = tk.StringVar(value="მზადაა")
+		self.status_var = tk.StringVar(value=f"ვერსია: {VERSION}")
 
 		# Display entry (readonly)
 		self.entry = ttk.Entry(self.frame, textvariable=self.expr_var, font=("Segoe UI", 16))

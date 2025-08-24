@@ -1,0 +1,9 @@
+Package: shota
+Version: 0.1.1
+Architecture: all
+Maintainer: mishka002 <mishka002@users.noreply.github.com>
+Depends: python3, python3-tk, git
+Section: utils
+Priority: optional
+Description: Shota launcher and calculator
+ Simple GUI launcher that updates a GitHub repo and runs a calculator.

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 APP_NAME="shota"
-VERSION="0.1.0"
+VERSION="0.1.1"
 ARCH="all"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"

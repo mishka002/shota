@@ -97,14 +97,6 @@ def main():
         run_btn = ttk.Button(btns, text="კალკულატორის გაშვება")
         quit_btn = ttk.Button(btns, text="გასვლა", command=root.destroy)
 
-    def start_update():
-        # Wire indeterminate progress
-        try:
-            pbar.start(70)
-        except Exception:
-            pass
-    run_update_async(status_var, update_btn, pbar, on_done=(run_calculator if args.autorun else None))
-
     def run_calculator():
         exe = sys.executable or "python3"
         home_py = os.path.join(BASE_DIR, "home.py")
@@ -113,6 +105,14 @@ def main():
             status_var.set("კალკულატორი გაეშვა")
         except Exception as e:
             status_var.set(f"ვერ გაიშვა: {e}")
+
+    def start_update():
+        # Wire indeterminate progress
+        try:
+            pbar.start(70)
+        except Exception:
+            pass
+        run_update_async(status_var, update_btn, pbar, on_done=(run_calculator if args.autorun else None))
 
     update_btn.config(command=start_update)
     run_btn.config(command=run_calculator)
